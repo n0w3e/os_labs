@@ -1,84 +1,69 @@
 #include "../include/timsort.h"
+#include <pthread.h>
+#include <vector>
+#include <cstring>
 #include <algorithm>
-#include <iostream>
-#include <condition_variable>
+#include <climits>
 
-std::mutex threadMutex;
-std::condition_variable threadCondition;
-int currentThreads = 0;
+struct ThreadArgs {
+    int* array;
+    size_t start;
+    size_t end;
+};
 
-constexpr int MIN_RUN = 32;
+void* timsort_thread(void* args) {
+    ThreadArgs* threadArgs = static_cast<ThreadArgs*>(args);
+    std::sort(threadArgs->array + threadArgs->start, threadArgs->array + threadArgs->end);
+    pthread_exit(nullptr);
+    return nullptr;
+}
 
-void insertionSort(std::vector<int>& array, int left, int right) {
-    for (int i = left + 1; i <= right; ++i) {
-        int temp = array[i];
-        int j = i - 1;
-        while (j >= left && array[j] > temp) {
-            array[j + 1] = array[j];
-            --j;
-        }
-        array[j + 1] = temp;
+void timsort(int* array, size_t size) {
+    std::sort(array, array + size);
+}
+
+void multithreaded_timsort(int* array, size_t size, int num_threads) {
+    size_t chunk_size = size / num_threads;
+    pthread_t threads[num_threads];
+    ThreadArgs threadArgs[num_threads];
+
+    for (int i = 0; i < num_threads; ++i) {
+        threadArgs[i] = {array, i * chunk_size, (i == num_threads - 1) ? size : (i + 1) * chunk_size};
+        pthread_create(&threads[i], nullptr, timsort_thread, &threadArgs[i]);
     }
-}
 
-void merge(std::vector<int>& array, int left, int mid, int right) {
-    int len1 = mid - left + 1, len2 = right - mid;
-    std::vector<int> leftArray(len1), rightArray(len2);
-
-    std::copy(array.begin() + left, array.begin() + mid + 1, leftArray.begin());
-    std::copy(array.begin() + mid + 1, array.begin() + right + 1, rightArray.begin());
-
-    int i = 0, j = 0, k = left;
-    while (i < len1 && j < len2) {
-        if (leftArray[i] <= rightArray[j]) {
-            array[k++] = leftArray[i++];
-        } else {
-            array[k++] = rightArray[j++];
-        }
+    for (int i = 0; i < num_threads; ++i) {
+        pthread_join(threads[i], nullptr);
     }
-    while (i < len1) array[k++] = leftArray[i++];
-    while (j < len2) array[k++] = rightArray[j++];
+
+    merge_sorted_chunks(array, size, chunk_size, num_threads);
 }
 
-void timSortChunk(std::vector<int>& array, int left, int right) {
-    insertionSort(array, left, right);
-}
+void merge_sorted_chunks(int* array, size_t size, size_t chunk_size, int num_chunks) {
+    std::vector<int> temp(size);
+    size_t* indices = new size_t[num_chunks];
+    memset(indices, 0, num_chunks * sizeof(size_t));
 
-void timSort(std::vector<int>& array, int maxThreads) {
-    int n = array.size();
-    std::vector<std::thread> threads;
-
-    for (int i = 0; i < n; i += MIN_RUN) {
-        int right = std::min(i + MIN_RUN - 1, n - 1);
-
-        {
-            std::unique_lock<std::mutex> lock(threadMutex);
-            threadCondition.wait(lock, [&]() { return currentThreads < maxThreads; });
-            ++currentThreads;
-        }
-
-        threads.emplace_back([&, i, right]() {
-            timSortChunk(array, i, right);
-            {
-                std::lock_guard<std::mutex> lock(threadMutex);
-                --currentThreads;
-                threadCondition.notify_one();
+    for (size_t i = 0; i < size; ++i) {
+        int min_index = -1;
+        int min_value = INT_MAX;
+        for (int j = 0; j < num_chunks; ++j) {
+            if (indices[j] < chunk_size && (j * chunk_size + indices[j]) < size) {
+                int value = array[j * chunk_size + indices[j]];
+                if (value < min_value) {
+                    min_value = value;
+                    min_index = j;
+                }
             }
-        });
-    }
-
-    for (auto& thread : threads) thread.join();
-
-    for (int size = MIN_RUN; size < n; size *= 2) {
-        for (int left = 0; left < n; left += 2 * size) {
-            int mid = left + size - 1;
-            int right = std::min(left + 2 * size - 1, n - 1);
-
-            if (mid < right) merge(array, left, mid, right);
         }
+        temp[i] = min_value;
+        indices[min_index]++;
     }
+
+    std::copy(temp.begin(), temp.end(), array);
+    delete[] indices;
 }
 
-bool isSorted(const std::vector<int>& array) {
-    return std::is_sorted(array.begin(), array.end());
+void timsort_wrapper(int* array, size_t size, int /*num_threads*/) {
+    timsort(array, size);
 }

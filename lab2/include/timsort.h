@@ -1,11 +1,11 @@
 #ifndef TIMSORT_H
 #define TIMSORT_H
 
-#include <vector>
-#include <thread>
-#include <mutex>
+#include <cstddef>
 
-void timSort(std::vector<int>& array, int maxThreads);
-bool isSorted(const std::vector<int>& array);
+void timsort(int* array, size_t size);
+void multithreaded_timsort(int* array, size_t size, int num_threads);
+void merge_sorted_chunks(int* array, size_t size, size_t chunk_size, int num_chunks);
+void timsort_wrapper(int* array, size_t size, int num_threads);
 
 #endif

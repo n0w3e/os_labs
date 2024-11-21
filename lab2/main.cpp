@@ -1,33 +1,39 @@
-#include "../include/timsort.h"
+#include "timsort.h"
 #include <iostream>
 #include <vector>
-#include <chrono>
+#include <cstdlib>
+#include <ctime>
 
-int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <max_threads>\n";
-        return 1;
+void print_array(const int* array, size_t size) {
+    for (size_t i = 0; i < size; ++i) {
+        std::cout << array[i] << " ";
+    }
+    std::cout << std::endl;
+}
+
+int main() {
+    size_t size;
+    int num_threads;
+
+    std::cout << "Enter the size of the array: ";
+    std::cin >> size;
+    std::cout << "Enter the number of threads: ";
+    std::cin >> num_threads;
+
+    std::vector<int> array(size);
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
+
+    for (size_t i = 0; i < size; ++i) {
+        array[i] = std::rand() % 100;
     }
 
-    int maxThreads = std::stoi(argv[1]);
+    std::cout << "Original array: ";
+    print_array(array.data(), size);
 
-    std::vector<int> array = {34, 7, 23, 32, 5, 62, 32, 12, 4, 23};
+    multithreaded_timsort(array.data(), size, num_threads);
 
-    std::cout << "Original array:\n";
-    for (int num : array) std::cout << num << " ";
-    std::cout << "\n";
-
-    auto start = std::chrono::high_resolution_clock::now();
-    timSort(array, maxThreads);
-    auto end = std::chrono::high_resolution_clock::now();
-
-    std::cout << "Sorted array:\n";
-    for (int num : array) std::cout << num << " ";
-    std::cout << "\n";
-
-    std::cout << "Time: " 
-              << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() 
-              << " ms\n";
+    std::cout << "Sorted array: ";
+    print_array(array.data(), size);
 
     return 0;
 }
