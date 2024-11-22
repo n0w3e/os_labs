@@ -21,23 +21,18 @@ double measure_time(void (*sort_func)(int*, size_t, int), int* array, size_t siz
 
 TEST(TimSortTests, SingleThreadCorrectness) {
     constexpr size_t size = 1000;
-    int* data = new int[size];
-    for (size_t i = 0; i < size; ++i) {
-        data[i] = rand() % 10000;
-    }
-
-    int* expected = new int[size];
-    memcpy(expected, data, size * sizeof(int));
-    std::sort(expected, expected + size);
-
-    timsort(data, size);
+    std::vector<int> data(size);
 
     for (size_t i = 0; i < size; ++i) {
-        EXPECT_EQ(data[i], expected[i]);
+        data[i] = rand() % 1000;
     }
 
-    delete[] data;
-    delete[] expected;
+    std::vector<int> expected(data);
+    std::sort(expected.begin(), expected.end());
+
+    TimSort(data.data(), size);
+
+    EXPECT_EQ(data, expected);
 }
 
 TEST(TimSortTests, SingleVsMultithreadedConsistency) {
@@ -52,8 +47,8 @@ TEST(TimSortTests, SingleVsMultithreadedConsistency) {
     memcpy(single_thread_result, data, size * sizeof(int));
     memcpy(multi_thread_result, data, size * sizeof(int));
 
-    timsort(single_thread_result, size);
-    multithreaded_timsort(multi_thread_result, size, 4);
+    TimSort(single_thread_result, size);
+    MultithreadedTimsort(multi_thread_result, size, 4);
 
     for (size_t i = 0; i < size; ++i) {
         EXPECT_EQ(single_thread_result[i], multi_thread_result[i]);
@@ -65,7 +60,7 @@ TEST(TimSortTests, SingleVsMultithreadedConsistency) {
 }
 
 TEST(TimSortTests, MultithreadedPerformance) {
-    const size_t size = 1000000;
+    constexpr size_t size = 1000000;
     int single_thread_data[size];
     int multi_thread_data[size];
 
@@ -74,12 +69,12 @@ TEST(TimSortTests, MultithreadedPerformance) {
         multi_thread_data[i] = single_thread_data[i];
     }
 
-    int num_threads = 4;
+    constexpr int num_threads = 4;
 
-    double single_time = measure_time(timsort_wrapper, single_thread_data, size, 1);
+    double single_time = measure_time(TimsortWrapper, single_thread_data, size, 1);
     std::cout << "Single-threaded time: " << single_time << " seconds\n";
 
-    double multi_time = measure_time(multithreaded_timsort, multi_thread_data, size, num_threads);
+    double multi_time = measure_time(MultithreadedTimsort, multi_thread_data, size, num_threads);
     std::cout << "Multi-threaded time: " << multi_time << " seconds\n";
 
     EXPECT_LT(multi_time, single_time);

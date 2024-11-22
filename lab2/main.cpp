@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <ctime>
 
-void print_array(const int* array, size_t size) {
+void PrintArray(const int* array, size_t size) {
     for (size_t i = 0; i < size; ++i) {
         std::cout << array[i] << " ";
     }
@@ -28,12 +28,12 @@ int main() {
     }
 
     std::cout << "Original array: ";
-    print_array(array.data(), size);
+    PrintArray(array.data(), size);
 
-    multithreaded_timsort(array.data(), size, num_threads);
+    MultithreadedTimsort(array.data(), size, num_threads);
 
     std::cout << "Sorted array: ";
-    print_array(array.data(), size);
+    PrintArray(array.data(), size);
 
     return 0;
 }
