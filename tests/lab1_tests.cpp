@@ -28,7 +28,7 @@ TEST(ParentProcessTest, SumWithNegativeNumbers) {
         close(pipe1[1]);
         close(pipe2[0]);
 
-        execl("../", "lab1", filename, NULL); // путь до исполняемого файла
+        execl("../", "lab1", filename, NULL); // Путь до исполняемого файла
         perror("execl");
         exit(EXIT_FAILURE);
     } else {
@@ -80,7 +80,7 @@ TEST(ParentProcessTest, SumWithZero) {
         close(pipe1[1]);
         close(pipe2[0]);
 
-        execl("../", "lab1", filename, NULL); // путь до исполняемого файла
+        execl("../", "lab1", filename, NULL); // Путь до исполняемого файла
         perror("execl");
         exit(EXIT_FAILURE);
     } else {
@@ -133,7 +133,7 @@ TEST(ParentProcessTest, SumWithLargeNumbers) {
         close(pipe1[1]);
         close(pipe2[0]);
 
-        execl("../", "lab1", filename, NULL); // путь до исполняемого файла
+        execl("../", "lab1", filename, NULL); // Путь до исполняемого файла
         perror("execl");
         exit(EXIT_FAILURE);
     } else {
