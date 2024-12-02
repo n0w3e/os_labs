@@ -13,24 +13,18 @@ struct ThreadArgs {
     size_t end;
 };
 
-void* TimsortThread(void* args) {
-    ThreadArgs* threadArgs = static_cast<ThreadArgs*>(args);
-    std::sort(threadArgs->array + threadArgs->start, threadArgs->array + threadArgs->end);
-    pthread_exit(nullptr);
-    return nullptr;
-}
-
 void InsertionSort(int* array, size_t left, size_t right) {
     for (size_t i = left + 1; i <= right; ++i) {
-        int temp = array[i];
+        int key = array[i];
         size_t j = i;
-        while (j > left && array[j - 1] > temp) {
+        while (j > left && array[j - 1] > key) {
             array[j] = array[j - 1];
             --j;
         }
-        array[j] = temp;
+        array[j] = key;
     }
 }
+
 
 void Merge(int* array, size_t left, size_t mid, size_t right) {
     size_t len1 = mid - left + 1;
@@ -55,6 +49,7 @@ void Merge(int* array, size_t left, size_t mid, size_t right) {
     while (i < len1) {
         array[k++] = left_part[i++];
     }
+
     while (j < len2) {
         array[k++] = right_part[j++];
     }
@@ -76,6 +71,16 @@ void TimSort(int* array, size_t size) {
             }
         }
     }
+}
+
+void* TimsortThread(void* args) {
+    ThreadArgs* threadArgs = static_cast<ThreadArgs*>(args);
+    size_t segment_size = threadArgs->end - threadArgs->start;
+
+    TimSort(threadArgs->array + threadArgs->start, segment_size);
+
+    pthread_exit(nullptr);
+    return nullptr;
 }
 
 void MultithreadedTimsort(int* array, size_t size, int num_threads) {
