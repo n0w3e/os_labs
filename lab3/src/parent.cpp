@@ -32,7 +32,7 @@ void runParentProcess(const std::string& filename) {
     }
 
     if (pid == 0) {
-        execl("/home/n0wee/Coding/os_labs/build/lab3/lab3", "lab3", filename.c_str(), nullptr);
+        execl("./lab3", "lab3", filename.c_str(), nullptr);
         perror("Ошибка вызова execl");
         exit(EXIT_FAILURE);
     } else {
