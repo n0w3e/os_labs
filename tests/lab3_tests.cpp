@@ -1,98 +1,74 @@
 #include <gtest/gtest.h>
 #include <fstream>
 #include <string>
-#include <cstdlib>
-#include <sys/wait.h>
-#include <unistd.h>
+#include "../include/parent.h"
+#include "../include/child.h"
 
-void writeInputToFile(const std::string& input, const std::string& filename) {
-    std::ofstream file(filename);
-    ASSERT_TRUE(file.is_open());
-    file << input;
-    file.close();
-}
+constexpr auto inputFile = "input.txt";
+constexpr auto resultFile = "result.txt";
 
-void executeParentAndChild(const std::string& input, const std::string& sharedFile, const std::string& resultFile) {
-    pid_t pid = fork();
-    ASSERT_NE(pid, -1) << "Ошибка fork()";
-
-    if (pid == 0) {
-        execl("./lab3", "lab3", sharedFile.c_str(), nullptr);
-        perror("Ошибка вызова execl");
-        exit(EXIT_FAILURE);
-    } else {
-        int status;
-        waitpid(pid, &status, 0);
-        ASSERT_TRUE(WIFEXITED(status)) << "Ошибка выполнения дочернего процесса";
-        ASSERT_EQ(WEXITSTATUS(status), 0) << "Ошибка завершения дочернего процесса";
+std::string readFile(const char* filename) {
+    std::ifstream file(filename);
+    std::ostringstream content;
+    if (file.is_open()) {
+        content << file.rdbuf();
+        file.close();
     }
+    return content.str();
 }
 
-TEST(ParentChildIntegrationTest, SumWithNegativeNumbers) {
-    const std::string input = "-3 -4 5";
-    const std::string expected = "Сумма чисел: -2";
-    const std::string sharedFile = "input.txt";
-    const std::string resultFile = "result.txt";
+TEST(ProcessTest, SumWithNegativeNumbers) {
+    constexpr auto input = "-3 -4 5";
+    constexpr auto expected = "Сумма чисел: -2\n";
 
-    writeInputToFile(input, sharedFile);
+    std::ofstream inputFileStream(inputFile);
+    ASSERT_TRUE(inputFileStream.is_open());
+    inputFileStream << input;
+    inputFileStream.close();
 
-    executeParentAndChild(input, sharedFile, resultFile);
+    runParentProcess(inputFile);
 
-    std::ifstream result(resultFile);
-    ASSERT_TRUE(result.is_open());
+    std::string result = readFile(resultFile);
+    EXPECT_EQ(result, expected);
 
-    std::string resultContent;
-    std::getline(result, resultContent);
-    result.close();
-
-    ASSERT_EQ(resultContent, expected);
-
-    remove(sharedFile.c_str());
-    remove(resultFile.c_str());
+    remove(inputFile);
+    remove(resultFile);
 }
 
-TEST(ParentChildIntegrationTest, SumWithZero) {
-    const std::string input = "0 0 0";
-    const std::string expected = "Сумма чисел: 0";
-    const std::string sharedFile = "input.txt";
-    const std::string resultFile = "result.txt";
+TEST(ProcessTest, SumWithZero) {
+    constexpr auto input = "0 0 0";
+    constexpr auto expected = "Сумма чисел: 0\n";
 
-    writeInputToFile(input, sharedFile);
-    executeParentAndChild(input, sharedFile, resultFile);
+    std::ofstream inputFileStream(inputFile);
+    ASSERT_TRUE(inputFileStream.is_open());
+    inputFileStream << input;
+    inputFileStream.close();
 
-    std::ifstream result(resultFile);
-    ASSERT_TRUE(result.is_open());
+    runParentProcess(inputFile);
 
-    std::string resultContent;
-    std::getline(result, resultContent);
-    result.close();
+    std::string result = readFile(resultFile);
+    EXPECT_EQ(result, expected);
 
-    ASSERT_EQ(resultContent, expected);
-
-    remove(sharedFile.c_str());
-    remove(resultFile.c_str());
+    remove(inputFile);
+    remove(resultFile);
 }
 
-TEST(ParentChildIntegrationTest, SumWithLargeNumbers) {
-    const std::string input = "100000 200000 300000";
-    const std::string expected = "Сумма чисел: 600000";
-    const std::string sharedFile = "input.txt";
-    const std::string resultFile = "result.txt";
+TEST(ProcessTest, SumWithLargeNumbers) {
+    constexpr auto input = "100000 200000 300000";
+    constexpr auto expected = "Сумма чисел: 600000\n";
 
-    writeInputToFile(input, sharedFile);
-    executeParentAndChild(input, sharedFile, resultFile);
+    std::ofstream inputFileStream(inputFile);
+    ASSERT_TRUE(inputFileStream.is_open());
+    inputFileStream << input;
+    inputFileStream.close();
 
-    std::ifstream result(resultFile);
-    ASSERT_TRUE(result.is_open());
+    runParentProcess(inputFile);
 
-    std::string resultContent;
-    std::getline(result, resultContent);
-    result.close();
+    std::string result = readFile(resultFile);
+    EXPECT_EQ(result, expected);
 
-    ASSERT_EQ(resultContent, expected);
-
-    remove(sharedFile.c_str());
-    remove(resultFile.c_str());
+    remove(inputFile);
+    remove(resultFile);
 }
 
 int main(int argc, char **argv) {

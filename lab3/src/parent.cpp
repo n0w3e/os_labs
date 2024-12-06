@@ -7,9 +7,15 @@
 #include <fcntl.h>
 
 void runParentProcess(const std::string& filename) {
-    std::cout << "Введите числа через пробел:\n";
-    std::string input;
-    std::getline(std::cin, input);
+    std::ifstream inputFile(filename);
+    if (!inputFile.is_open()) {
+        std::cerr << "Ошибка: входной файл не найден: " << filename << std::endl;
+        return;
+    }
+
+    std::string input((std::istreambuf_iterator<char>(inputFile)),
+                      std::istreambuf_iterator<char>());
+    inputFile.close();
 
     int fd = open(filename.c_str(), O_RDWR | O_CREAT | O_TRUNC, 0666);
     if (fd == -1) {
@@ -32,17 +38,11 @@ void runParentProcess(const std::string& filename) {
     }
 
     if (pid == 0) {
-        execl("./lab3", "lab3", filename.c_str(), nullptr);
+        execl("./lab3", "./lab3", filename.c_str(), nullptr);
         perror("Ошибка вызова execl");
         exit(EXIT_FAILURE);
     } else {
         int status;
         waitpid(pid, &status, 0);
-
-        if (WIFEXITED(status)) {
-            std::cout << "Дочерний процесс завершился с кодом: " << WEXITSTATUS(status) << "\n";
-        } else {
-            std::cerr << "Ошибка: дочерний процесс завершился некорректно\n";
-        }
     }
 }
