@@ -28,10 +28,14 @@ find_package(Threads REQUIRED)
 # target_link_libraries(lab2_test PRIVATE GTest::gtest GTest::gtest_main Threads::Threads)
 
 # Lab3
-add_executable(lab3_test lab3_tests.cpp)
-target_sources(lab3_test PRIVATE ../lab3/src/parent.cpp ../lab3/src/child.cpp)
-target_include_directories(lab3_test PRIVATE ../lab3/include)
-target_link_libraries(lab3_test PRIVATE GTest::gtest GTest::gtest_main Threads::Threads rt)
+# add_executable(lab3_test lab3_tests.cpp)
+# target_sources(lab3_test PRIVATE ../lab3/src/parent.cpp ../lab3/src/child.cpp)
+# target_include_directories(lab3_test PRIVATE ../lab3/include)
+# target_link_libraries(lab3_test PRIVATE GTest::gtest GTest::gtest_main Threads::Threads rt)
 
+# Lab4
+add_executable(lab4_tests lab4_tests.cpp)
+target_include_directories(lab4_tests PRIVATE ../lab4/include)
+target_link_libraries(lab4_tests PRIVATE GTest::gtest GTest::gtest_main Threads::Threads dl)
 
 enable_testing()
