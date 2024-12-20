@@ -14,6 +14,10 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 find_package(Threads REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(ZeroMQ REQUIRED libzmq)
+include_directories(/opt/homebrew/include)
+link_directories(/opt/homebrew/lib)
 
 # Lab1
 # add_executable(lab1_test lab1_tests.cpp)
@@ -34,8 +38,13 @@ find_package(Threads REQUIRED)
 # target_link_libraries(lab3_test PRIVATE GTest::gtest GTest::gtest_main Threads::Threads rt)
 
 # Lab4
-add_executable(lab4_tests lab4_tests.cpp)
-target_include_directories(lab4_tests PRIVATE ../lab4/include)
-target_link_libraries(lab4_tests PRIVATE GTest::gtest GTest::gtest_main Threads::Threads dl)
+# add_executable(lab4_tests lab4_tests.cpp)
+# target_include_directories(lab4_tests PRIVATE ../lab4/include)
+# target_link_libraries(lab4_tests PRIVATE GTest::gtest GTest::gtest_main Threads::Threads dl)
+
+# Lab5
+add_executable(lab5_tests lab5_tests.cpp)
+target_include_directories(lab5_tests PRIVATE ../lab5/include)
+target_link_libraries(lab5_tests PRIVATE GTest::gtest GTest::gtest_main Threads::Threads dl /opt/homebrew/include)
 
 enable_testing()
