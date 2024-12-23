@@ -13,11 +13,18 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
+include(FetchContent)
+
+FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json
+    GIT_TAG v3.11.2
+)
+
+FetchContent_MakeAvailable(nlohmann_json)
+
 find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(ZeroMQ REQUIRED libzmq)
-include_directories(/opt/homebrew/include)
-link_directories(/opt/homebrew/lib)
 
 # Lab1
 # add_executable(lab1_test lab1_tests.cpp)
@@ -43,8 +50,14 @@ link_directories(/opt/homebrew/lib)
 # target_link_libraries(lab4_tests PRIVATE GTest::gtest GTest::gtest_main Threads::Threads dl)
 
 # Lab5
-add_executable(lab5_tests lab5_tests.cpp)
-target_include_directories(lab5_tests PRIVATE ../lab5/include)
-target_link_libraries(lab5_tests PRIVATE GTest::gtest GTest::gtest_main Threads::Threads dl /opt/homebrew/include)
+# add_executable(lab5_tests lab5_tests.cpp)
+# target_include_directories(lab5_tests PRIVATE ../lab5/include)
+# target_link_libraries(lab5_tests PRIVATE GTest::gtest GTest::gtest_main Threads::Threads dl /opt/homebrew/include)
+
+# Lab8
+add_executable(lab8_tests lab8_tests.cpp)
+target_sources(lab8_tests PRIVATE ../lab8/src/Job.cpp ../lab8/src/DAG.cpp ../lab8/src/ThreadPool.cpp ../lab8/src/Barrier.cpp)
+target_include_directories(lab8_tests PRIVATE ../lab8/include)
+target_link_libraries(lab8_tests PRIVATE GTest::gtest GTest::gtest_main Threads::Threads nlohmann_json::nlohmann_json)
 
 enable_testing()
