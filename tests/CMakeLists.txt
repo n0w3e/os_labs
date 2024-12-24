@@ -54,10 +54,10 @@ find_package(PkgConfig REQUIRED)
 # target_include_directories(lab5_tests PRIVATE ../lab5/include)
 # target_link_libraries(lab5_tests PRIVATE GTest::gtest GTest::gtest_main Threads::Threads dl /opt/homebrew/include)
 
-# Lab8
-add_executable(lab8_tests lab8_tests.cpp)
-target_sources(lab8_tests PRIVATE ../lab8/src/Job.cpp ../lab8/src/DAG.cpp ../lab8/src/ThreadPool.cpp ../lab8/src/Barrier.cpp)
-target_include_directories(lab8_tests PRIVATE ../lab8/include)
-target_link_libraries(lab8_tests PRIVATE GTest::gtest GTest::gtest_main Threads::Threads nlohmann_json::nlohmann_json)
+# KP
+# add_executable(lab8_tests lab8_tests.cpp)
+# target_sources(lab8_tests PRIVATE ../lab8/src/Job.cpp ../lab8/src/DAG.cpp ../lab8/src/ThreadPool.cpp ../lab8/src/Barrier.cpp)
+# target_include_directories(lab8_tests PRIVATE ../lab8/include)
+# target_link_libraries(lab8_tests PRIVATE GTest::gtest GTest::gtest_main Threads::Threads nlohmann_json::nlohmann_json)
 
 enable_testing()
