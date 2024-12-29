@@ -8,7 +8,6 @@ Job::Job(const std::string& id, const std::vector<std::string>& dependencies)
     : id(id), dependencies(dependencies) {}
 
 void Job::execute() {
-    std::lock_guard<std::mutex> lock(output_mutex);
     std::cout << "Executing job: " << id << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(1));
     completed = true;

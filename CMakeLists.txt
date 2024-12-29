@@ -6,7 +6,7 @@ project(OSMAI)
 # add_subdirectory(lab3)
 # add_subdirectory(lab4)
 # add_subdirectory(lab5-7)
-# add_subdirectory(lab8)
+# add_subdirectory(KP)
 # add_subdirectory(tests)
 
 enable_testing()

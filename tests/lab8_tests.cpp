@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
-#include "../include/DAG.h"
-#include "../include/Job.h"
+#include "../KP/include/DAG.h"
+#include "../KP/include/Job.h"
 #include <sstream>
 
 using json = nlohmann::json;

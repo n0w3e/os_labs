@@ -56,7 +56,7 @@ find_package(PkgConfig REQUIRED)
 
 # KP
 # add_executable(lab8_tests lab8_tests.cpp)
-# target_sources(lab8_tests PRIVATE ../lab8/src/Job.cpp ../lab8/src/DAG.cpp ../lab8/src/ThreadPool.cpp ../lab8/src/Barrier.cpp)
+# target_sources(lab8_tests PRIVATE ../KP/src/Job.cpp ../KP/src/DAG.cpp ../KP/src/ThreadPool.cpp ../KP/src/Barrier.cpp)
 # target_include_directories(lab8_tests PRIVATE ../lab8/include)
 # target_link_libraries(lab8_tests PRIVATE GTest::gtest GTest::gtest_main Threads::Threads nlohmann_json::nlohmann_json)
 
